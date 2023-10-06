@@ -1,0 +1,146 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:eu-north-1:455385653807:task-definition/django-app:72",
+  "containerDefinitions": [
+    {
+      "name": "django-app",
+      "image": "455385653807.dkr.ecr.eu-north-1.amazonaws.com/bpb:latest",
+      "cpu": 2,
+      "memory": 256,
+      "links": [],
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "command": [
+        "/bin/sh",
+        "-c",
+        "python manage.py migrate && gunicorn -w 3 -b :8000 bpbtest.wsgi:application"
+      ],
+      "environment": [
+        {
+          "name": "DB_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DB_USER",
+          "value": "foo"
+        },
+        {
+          "name": "USE_S3",
+          "value": "TRUE"
+        },
+        {
+          "name": "ALLOWED_HOSTS",
+          "value": "kanavino.ru"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "mydb"
+        },
+        {
+          "name": "AWS_S3_BUCKET_NAME",
+          "value": "bpb-staticfiles"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "production.camppnypooc8.eu-north-1.rds.amazonaws.com"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "AWS_S3_UG_SECRET_ACCESS_KEY",
+          "valueFrom": "arn:aws:ssm:eu-north-1:455385653807:parameter/BPB_S3_UG_SECRET_ACCESS_KEY"
+        },
+        {
+          "name": "AWS_S3_UG_ACCESS_KEY_ID",
+          "valueFrom": "arn:aws:ssm:eu-north-1:455385653807:parameter/BPB_S3_UG_ACCESS_KEY_ID"
+        },
+        {
+          "valueFrom": "arn:aws:ssm:eu-north-1:455385653807:parameter/BPB_DB_PASSWORD",
+          "name": "DB_PASSWORD"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "static_volume",
+          "containerPath": "/web/staticfiles"
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/django-app",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "django-app-log-stream"
+        }
+      }
+    },
+    {
+      "name": "nginx",
+      "image": "455385653807.dkr.ecr.eu-north-1.amazonaws.com/nginx:latest",
+      "cpu": 2,
+      "memory": 128,
+      "links": [
+        "django-app"
+      ],
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "static_volume",
+          "containerPath": "/web/staticfiles",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/nginx",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "nginx-log-stream"
+        }
+      }
+    }
+  ],
+  "family": "django-app",
+  "revision": 72,
+  "volumes": [
+    {
+      "name": "static_volume",
+      "host": {}
+    }
+  ],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EXTERNAL",
+    "EC2"
+  ],
+  "registeredAt": "2023-10-06T07:47:13.902Z",
+  "registeredBy": "arn:aws:iam::455385653807:user/adminuser",
+  "tags": []
+}
