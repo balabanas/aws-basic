@@ -2,6 +2,7 @@
   "taskDefinitionArn": "arn:aws:ecs:eu-north-1:455385653807:task-definition/django-app:72",
   "containerDefinitions": [
     {
+      "executionRoleArn": "arn:aws:iam::455385653807:role/ecsTaskExecutionRole",
       "name": "django-app",
       "image": "455385653807.dkr.ecr.eu-north-1.amazonaws.com/bpb:latest",
       "cpu": 2,

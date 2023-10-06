@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "app" {
   family                = "django-app"
   container_definitions = data.template_file.app.rendered
   depends_on            = [aws_db_instance.production]
-  execution_role_arn = "arn:aws:iam::455385653807:role/ecsTaskExecutionRole"
+#  execution_role_arn = "arn:aws:iam::455385653807:role/ecsTaskExecutionRole"
 
   volume {
     name = "static_volume"
